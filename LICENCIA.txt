@@ -1,0 +1,13 @@
+Filosofía PAU Madrid
+Creación de Víctor Ramírez Vélez, profesor de Filosofía del IES Ágora.
+
+Licencia Creative Commons Reconocimiento-NoComercial-SinObraDerivada 4.0 Internacional (CC BY-NC-ND 4.0)
+https://creativecommons.org/licenses/by-nc-nd/4.0/deed.es
+
+Puedes copiar y compartir la obra, con atribución y sin fines comerciales, sin modificarla.
+Los textos originales de los autores conservan su propia situación de derechos.
+
+Tipografías incluidas, todas bajo la SIL Open Font License 1.1 (https://openfontlicense.org):
+- Bricolage Grotesque, Figtree y JetBrains Mono (autores respectivos, vía Google Fonts).
+- OpenDyslexic, Copyright © 2019 Abbie Gonzalez (https://opendyslexic.org).
+Las fuentes se redistribuyen sin cambios de nombre, recortadas a caracteres latinos; no se venden por separado.
