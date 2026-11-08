@@ -32,5 +32,63 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/01-inicio.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Inicio: cita del día, racha y misión semanal"
+    },
+    {
+      "src": "screenshots/05-pregunta-con-explicacion.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Preguntas con explicación amable"
+    },
+    {
+      "src": "screenshots/06-simulacro-pau.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Simulacro PAU con temporizador"
+    },
+    {
+      "src": "screenshots/08-practica-por-autor.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Práctica de escritura por autor"
+    },
+    {
+      "src": "screenshots/10-correccion-con-pistas.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Corrección con pistas y rúbrica"
+    },
+    {
+      "src": "screenshots/12-cartas.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Colección de cartas"
+    },
+    {
+      "src": "screenshots/13-carta-de-filosofo.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Carta de filósofo"
+    },
+    {
+      "src": "screenshots/16-atencion-a-la-diversidad.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Ajustes de atención a la diversidad"
+    }
   ]
 }
