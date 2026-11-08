@@ -6,6 +6,8 @@ Creación de Víctor Ramírez Vélez, profesor de Filosofía del IES Ágora. Lic
 - `index.html`: la app completa (tipografías incluidas, sin dependencias externas).
 - `manifest.webmanifest` e `icons/`: datos e iconos para instalarla.
 - `sw.js`: service worker que permite usarla sin conexión.
+- `screenshots/`: capturas declaradas en el manifiesto (las lee PWABuilder y el cuadro de instalación de Chrome).
+- `privacidad.html`: política de privacidad (la URL que pide Google Play: `https://tu-direccion/privacidad.html`). Antes de publicar, sustituye `[TU CORREO DE CONTACTO]` por tu correo.
 
 ## Publicarla gratis (hace falta HTTPS; estos servicios lo dan)
 **Netlify (lo más rápido):** entra en app.netlify.com/drop y arrastra esta carpeta entera. Te da una dirección https://….netlify.app.
