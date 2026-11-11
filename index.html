@@ -619,7 +619,35 @@ var MEDALS=[
  {id:'dil10',n:'Debatiente',d:'Reflexiona sobre 10 dilemas',t:function(){return Object.keys(S.dil||{}).filter(function(k){return S.dil[k].seen;}).length>=10;}},
  {id:'dil25',n:'Filósofo de la vida',d:'Reflexiona sobre 25 dilemas',t:function(){return Object.keys(S.dil||{}).filter(function(k){return S.dil[k].seen;}).length>=25;}}
 ];
-function checkMedals(){var nw=[];wkCheck();MEDALS.forEach(function(m){if(!S.medals[m.id]&&m.t()){S.medals[m.id]=dkey();nw.push(m);}});if(S.medals.diamante&&!S.cards['x:diamante']&&CBY['x:diamante'])cdGive(null,'x:diamante','Lo conseguiste todo: cada carta y cada medalla. Eres un auténtico maestro de la filosofía.',0,true);return nw;}
+function dSeenL(){return DIL.filter(function(d){return S.dil&&S.dil[d.id]&&S.dil[d.id].seen;});}
+function dRealN(){return dSeenL().filter(function(d){return d.tipo==='real';}).length;}
+function dAmbN(){var o={};dSeenL().forEach(function(d){o[d.amb]=1;});return Object.keys(o).length;}
+function dEscN(){return dSeenL().filter(function(d){return ((S.dil[d.id].t)||'').trim().length>=80;}).length;}
+function dAmbTot(){var o={};DIL.forEach(function(d){o[d.amb]=1;});return Object.keys(o).length;}
+function tstN(){return S.tst?(S.tst.n||1):0;}
+function repOk(){return !!(S.rep&&S.rep.exp);}
+var VC=[
+ {id:'espejo',title:'El espejo',sub2:'Autoconocimiento',text:'Conócete a ti mismo, decía el templo de Delfos. Al responder el test te miraste en el espejo de doce filósofos y descubriste con cuál compartes más ideas.',how:'Completa el test «¿Qué filósofo eres?».',why:'Completaste el test «¿Qué filósofo eres?» y descubriste tus afinidades filosóficas.',t:function(){return !!S.tst;}},
+ {id:'otramirada',title:'Otra mirada',sub2:'Cambiar de perspectiva',text:'Pensar es revisar. Repetir el test te permite comprobar si tus posturas han cambiado, y qué filósofo te acompaña ahora.',how:'Repite el test «¿Qué filósofo eres?» una segunda vez.',why:'Repetiste el test para contrastar cómo han cambiado tus posturas.',t:function(){return tstN()>=2;}},
+ {id:'duda',title:'La primera duda',sub2:'Dilemas',text:'La filosofía empieza con el asombro y la duda. Tu primer dilema es el primer paso para pensar por ti mismo antes de mirar la respuesta de nadie.',how:'Reflexiona sobre tu primer dilema y compruébalo.',why:'Reflexionaste sobre tu primer dilema y contrastaste tu postura con la de los autores.',t:function(){return dSeenL().length>=1;}},
+ {id:'abogado',title:'Abogado del diablo',sub2:'10 dilemas',text:'Defender una postura que no es la tuya es el mejor modo de entenderla. Diez dilemas después, ya sabes mirar un problema desde varios lados.',how:'Reflexiona sobre 10 dilemas.',why:'Reflexionaste sobre 10 dilemas y comparaste a los autores en cada uno.',t:function(){return dSeenL().length>=10;}},
+ {id:'agora',title:'El ágora',sub2:'25 dilemas',text:'En el ágora de Atenas se discutía en público lo que importaba a todos. Con 25 dilemas ya participas en esa conversación de siglos.',how:'Reflexiona sobre 25 dilemas.',why:'Reflexionaste sobre 25 dilemas y entraste en la conversación de la filosofía.',t:function(){return dSeenL().length>=25;}},
+ {id:'tribunal',title:'Tribunal de la razón',sub2:'Los 50 dilemas',gold:true,text:'Kant llamó tribunal de la razón al lugar donde la razón se examina a sí misma. Tú has examinado los cincuenta casos, uno a uno, con tu propio criterio.',how:'Reflexiona sobre los 50 dilemas.',why:'Reflexionaste sobre los 50 dilemas de «Tú y la Filosofía».',t:function(){return DIL.length>0&&dSeenL().length>=DIL.length;}},
+ {id:'hechos',title:'Pies en la tierra',sub2:'Casos reales',text:'La filosofía no vive en las nubes: nace de problemas reales. Has pensado diez casos inspirados en hechos de verdad, de productos retirados a decisiones difíciles.',how:'Reflexiona sobre 10 dilemas basados en hechos reales.',why:'Reflexionaste sobre 10 dilemas basados en hechos o situaciones reales.',t:function(){return dRealN()>=10;}},
+ {id:'angulos',title:'Todos los ángulos',sub2:'Todos los ámbitos',text:'Ética, política, sociedad, conocimiento, vida, ciencia y medio ambiente: la filosofía pregunta en todos los terrenos, y tú has pensado en cada uno.',how:'Reflexiona sobre al menos un dilema de cada ámbito.',why:'Reflexionaste sobre dilemas de todos los ámbitos temáticos.',t:function(){return DIL.length>0&&dAmbN()>=dAmbTot();}},
+ {id:'argumento',title:'Argumentar por escrito',sub2:'Reflexión escrita',text:'Escribir obliga a ordenar el pensamiento: una razón, otra razón, una conclusión. Con diez reflexiones escritas ya argumentas como pide el examen.',how:'Escribe una reflexión de al menos 80 caracteres en 10 dilemas distintos.',why:'Escribiste tu propia reflexión (de al menos 80 caracteres) en 10 dilemas distintos.',t:function(){return dEscN()>=10;}},
+ {id:'cuentas',title:'Rendir cuentas',sub2:'Informe',text:'Examinar la propia vida es parte de la filosofía. Revisar tu progreso en un informe te permite ver qué dominas y qué te queda por trabajar.',how:'Exporta tu informe (PDF o texto).',why:'Exportaste tu informe de progreso para revisarlo o entregarlo.',t:function(){return repOk();}}
+];
+MEDALS.push(
+ {id:'tst2',n:'Otra mirada',d:'Repite el test «¿Qué filósofo eres?»',t:function(){return tstN()>=2;}},
+ {id:'dil50',n:'Tribunal de la razón',d:'Reflexiona sobre los 50 dilemas',t:function(){return DIL.length>0&&dSeenL().length>=DIL.length;}},
+ {id:'dilreal',n:'Pies en la tierra',d:'Reflexiona sobre 10 dilemas basados en hechos reales',t:function(){return dRealN()>=10;}},
+ {id:'dilamb',n:'Todos los ángulos',d:'Reflexiona sobre dilemas de todos los ámbitos',t:function(){return DIL.length>0&&dAmbN()>=dAmbTot();}},
+ {id:'dilesc',n:'Argumentador',d:'Escribe tu reflexión en 10 dilemas',t:function(){return dEscN()>=10;}},
+ {id:'repx',n:'Rendir cuentas',d:'Exporta tu informe',t:function(){return repOk();}}
+);
+function vAward(){var nw=[];VC.forEach(function(c){var id='v:'+c.id;if(!S.cards[id]&&c.t())cdGive(nw,id,c.why,0,!!c.gold);});return nw;}
+function checkMedals(){var nw=[];wkCheck();var nv=vAward();if(nv.length)ui.newCards=nv;MEDALS.forEach(function(m){if(!S.medals[m.id]&&m.t()){S.medals[m.id]=dkey();nw.push(m);}});if(S.medals.diamante&&!S.cards['x:diamante']&&CBY['x:diamante'])cdGive(null,'x:diamante','Lo conseguiste todo: cada carta y cada medalla. Eres un auténtico maestro de la filosofía.',0,true);return nw;}
 
 /* ---------- sonido ---------- */
 var ac;
@@ -786,7 +814,7 @@ function cdMix(a,b,t){var x=cdHx(a),y=cdHx(b);return '#'+[0,1,2].map(function(i)
 function cdDate(k){if(!k)return '';var p=k.split('-').map(Number),M=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];return p[2]+' '+M[p[1]-1]+' '+p[0];}
 function cdSlug(s){return String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
 function cdShort(t,n){t=String(t);if(t.length<=n)return t;var c=t.slice(0,n),i=Math.max(c.lastIndexOf('. '),c.lastIndexOf('; '));return i>n*0.5?c.slice(0,i+1):c.replace(/\s+\S*$/,'')+'…';}
-var CD_TYPE={p:'Filósofo',c:'Concepto',h:'Relación',e:'Escritura',x:'Maestría'};
+var CD_TYPE={p:'Filósofo',c:'Concepto',h:'Relación',e:'Escritura',v:'Tú y la Filosofía',x:'Maestría'};
 
 function buildCards(){
   CARDS=[];CBY={};
@@ -808,6 +836,7 @@ function buildCards(){
       how:'Supera el Examen del autor de '+names.join(', ').replace(/, ([^,]*)$/,' y $1')+'.'});
   });
   escBuildCards(add);
+  VC.forEach(function(c){add({id:'v:'+c.id,type:'v',aid:'esc',title:c.title,text:c.text,sub1:'Tú y la Filosofía',sub2:c.sub2,foil:!!c.gold,how:c.how});});
   add({id:'x:diamante',type:'x',aid:'esc',title:'Diamante',text:'La carta más rara de la colección: solo la tiene quien ha conseguido todas las demás cartas y todas las demás medallas. Como el diamante, la filosofía se talla despacio, con paciencia, por muchas caras a la vez.',sub1:'Maestría',sub2:'Trofeo final',foil:true,how:'Consigue todas las demás cartas y todas las demás medallas.'});
 }
 buildCards();
@@ -838,7 +867,7 @@ function awardHitos(){
 }
 function backfillCards(){
   ORDER.forEach(function(id){var L=levelsOf(id);L.forEach(function(l){var k=S.levels[lvKey(id,l.n)];if(k&&k.done)awardCards(id,l.n,k.stars||1,!!l.boss);});});
-  save();
+  vAward();save();
 }
 
 /* ---------- dibujo ---------- */
@@ -1009,7 +1038,7 @@ function cdMini(c){var rec=S.cards[c.id];return '<button class="mini" data-act="
 function viewCards(){
   var got=Object.keys(S.cards).filter(function(k){return CBY[k];}).length,tot=CARDS.length,f=ui.cf||'all';
   var golds=CARDS.filter(function(c){var r=S.cards[c.id];return r&&(c.type==='p'?r.g:c.foil);}).length;
-  function show(c){if(f==='got')return !!S.cards[c.id];if(f==='p'||f==='c'||f==='h'||f==='e'||f==='x')return c.type===f;return true;}
+  function show(c){if(f==='got')return !!S.cards[c.id];if(f==='p'||f==='c'||f==='h'||f==='e'||f==='x'||f==='v')return c.type===f;return true;}
   var groups=ORDER.map(function(id){return {t:A[id].ficha.nombre,id:id,l:CARDS.filter(function(c){return c.aid===id&&c.type!=='h'&&show(c);}),all:CARDS.filter(function(c){return c.aid===id&&c.type!=='h';})};});
   var hl=CARDS.filter(function(c){return c.type==='h'&&show(c);});
   function chip(v,l){return '<button class="chip'+(f===v?' on':'')+'" style="'+(f===v?'background:var(--accent);color:var(--on-accent)':'')+'" data-act="cf" data-v="'+v+'" aria-pressed="'+(f===v)+'">'+l+'</button>';}
@@ -1020,12 +1049,15 @@ function viewCards(){
   var el=CARDS.filter(function(c){return c.type==='e'&&show(c);});
   if(el.length){var ne=CARDS.filter(function(c){return c.type==='e'&&S.cards[c.id];}).length,te=CARDS.filter(function(c){return c.type==='e';}).length;
     body+='<section class="stack"><div class="row"><h2 style="font-size:17px" class="grow">Escritura</h2><span class="small muted">'+ne+'/'+te+'</span></div><div class="cgrid">'+el.map(cdMini).join('')+'</div></section>';}
+  var vl=CARDS.filter(function(c){return c.type==='v'&&show(c);});
+  if(vl.length){var nv2=CARDS.filter(function(c){return c.type==='v'&&S.cards[c.id];}).length,tv=CARDS.filter(function(c){return c.type==='v';}).length;
+    body+='<section class="stack"><div class="row"><h2 style="font-size:17px" class="grow">Tú y la Filosofía</h2><span class="small muted">'+nv2+'/'+tv+'</span></div><div class="cgrid">'+vl.map(cdMini).join('')+'</div></section>';}
   var xl=CARDS.filter(function(c){return c.type==='x'&&show(c);});
   if(xl.length){body+='<section class="stack"><div class="row"><h2 style="font-size:17px" class="grow">Maestría</h2><span class="small muted">'+(S.cards['x:diamante']?1:0)+'/1</span></div><div class="cgrid">'+xl.map(cdMini).join('')+'</div></section>';}
   if(!body)body='<div class="card"><p>Todavía no hay cartas en esta vista. Supera niveles para conseguirlas.</p></div>';
   return '<div class="wrap stack"><div class="stack"><p class="eyebrow">Colección</p><h1 class="title">Mis cartas</h1><p class="muted">'+got+' de '+tot+' cartas · '+golds+' doradas. Cada nivel superado te da un concepto; el examen de cada autor, su carta de filósofo.</p>'+
    '<div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="'+tot+'" aria-valuenow="'+got+'"><b style="width:'+Math.round(100*got/tot)+'%"></b></div></div>'+
-   '<div class="chips">'+chip('all','Todas')+chip('got','Conseguidas')+chip('p','Filósofos')+chip('c','Conceptos')+chip('h','Relaciones')+chip('e','Escritura')+chip('x','Maestría')+'</div>'+body+'</div>'+tabs('cards');
+   '<div class="chips">'+chip('all','Todas')+chip('got','Conseguidas')+chip('p','Filósofos')+chip('c','Conceptos')+chip('h','Relaciones')+chip('e','Escritura')+chip('v','Tú y la Filosofía')+chip('x','Maestría')+'</div>'+body+'</div>'+tabs('cards');
 }
 function viewCard(){
   var c=CBY[ui.cid];if(!c)return viewCards();
@@ -1542,7 +1574,7 @@ SCN['h:vida-y-valores']=function(){return sDuo(B.sky(),B.night(),P('tablet',40,8
 SCN['h:accion-politica']=function(){return sDuo(B.dawn(),B.sky(),P('speech',40,42,.85)+P('crowd',40,112,.8),P('gear',120,64,.95)+P('hammer',120,118,.75,20)+P('wheat',146,124,.6));};
 function cdScene(c,a,b){
   Q=sPal(a,b);
-  var key=c.type==='c'?c.aid+':'+c.k:((c.type==='e'||c.type==='x')?c.id:'h:'+c.id.slice(2)),f=SCN[key];
+  var key=c.type==='c'?c.aid+':'+c.k:((c.type==='e'||c.type==='x'||c.type==='v')?c.id:'h:'+c.id.slice(2)),f=SCN[key];
   return f?f():'';
 }
 
@@ -2209,6 +2241,16 @@ M.quill=function(){return sO('M-2 28C-12 10 -10 -14 6 -32C22 -16 18 8 4 20L0 28Z
 M.inkwell=function(){return sO('M-16 24V8C-16 0 -10 -2 -10 -6H10C10 -2 16 0 16 8V24Z',Q.accent,1.3)+sE(0,-6,10,3,Q.dark,1.1)+sL('M-11 10C-4 14 4 14 11 10',Q.goldl,1.2)+sE(0,24,16,3,Q.dark,0);};
 M.sheet=function(){return sO('M-18 -24H10L20 -14V24H-18Z',Q.paper,1.3)+sO('M10 -24V-14H20Z',Q.stone,1)+sL('M-12 -10H12M-12 -2H12M-12 6H12M-12 14H4',Q.stone2,1);};
 SCN['x:diamante']=function(){return B.night()+B.rays(80,82)+sO('M46 50H114L136 80L80 142L24 80Z','#8FDDF7',1.6)+sO('M24 80H136L80 142Z','#4FB3DE',1.2)+sO('M46 50L62 80L80 50Z','#EAFBFF',1)+sO('M114 50L98 80L80 50Z','#BDEEFC',1)+sO('M62 80L80 50L98 80Z','#D6F6FF',1)+sL('M62 80L80 142M98 80L80 142M46 50L62 80M114 50L98 80','#FFFFFF',1.2)+P('star',80,26,.8)+sSpk([[26,34,3.4],[136,40,3],[134,118,2.6],[24,112,2.4]]);};
+SCN['v:espejo']=function(){return B.dawn()+B.rays(80,70)+P('mirror',80,86,2.6)+P('star',124,36,1.1)+sSpk([[30,44,3.2],[132,96,2.6],[28,110,2.4]]);};
+SCN['v:otramirada']=function(){return B.sky()+P('eye',80,78,2.3)+P('sun',126,34,.7)+P('question',36,40,.8)+sGround(140,Q.stone)+sSpk([[30,100,3],[134,108,2.6]]);};
+SCN['v:duda']=function(){return B.night()+P('question',80,84,2.5)+P('star',34,36,1)+P('star',128,48,.8)+sSpk([[26,100,3.2],[136,110,2.8]]);};
+SCN['v:abogado']=function(){return B.dawn()+sGround(138,Q.stone)+P('scales',80,84,2.3,0,0,1)+P('speech',36,34,.7)+P('speech',124,34,.7,0,1);};
+SCN['v:agora']=function(){return B.sky()+P('columns',80,86,1.7)+sGround(138,Q.stone)+P('crowd',80,128,.9)+P('speech',80,34,.7);};
+SCN['v:tribunal']=function(){return B.night()+B.rays(80,80)+P('scales',80,86,2.4)+P('crown',80,30,1)+sSpk([[28,40,3.4],[134,44,3],[132,116,2.6],[26,112,2.4]]);};
+SCN['v:hechos']=function(){return B.sky()+B.hills()+P('globe',80,64,1.9)+P('footprints',80,130,1.2)+sSpk([[30,40,3],[132,40,2.6]]);};
+SCN['v:angulos']=function(){return B.night()+B.rays(80,82)+P('compass',80,84,2.5)+sSpk([[28,40,3.2],[134,44,3],[134,118,2.6],[26,114,2.4]]);};
+SCN['v:argumento']=function(){return B.dawn()+B.rays(80,64)+P('sheet',70,104,1.7)+P('quill',98,70,1.9,28)+sSpk([[30,40,3.2],[134,34,3]]);};
+SCN['v:cuentas']=function(){return B.dawn()+P('scroll',80,90,2.4)+P('star',126,34,1.1)+sSpk([[32,40,3],[132,112,2.6]]);};
 SCN['e:pluma']=function(){return B.dawn()+B.rays(80,64)+P('sheet',80,112,1.3)+P('inkwell',34,118,.9)+P('quill',92,62,1.9,28)+sSpk([[34,40,3.4],[132,34,3],[126,96,2.4]]);};
 SCN['e:hilo']=function(){return B.dawn()+P('columns',30,98,.6)+P('columns',130,98,.6)+sGround(140,Q.stone)+sL('M26 134C56 112 36 88 70 82S116 96 92 64S104 48 114 40',Q.warm,2.4)+sE(24,134,10,6,Q.warm,1.2)+sL('M16 134H32M18 131H30M18 137H30',Q.ink,.8)+P('star',116,32,1.2)+sSpk([[58,46,3],[138,70,2.6]]);};
 SCN['e:dialogo']=function(){return B.dawn()+sGround(138,Q.stone)+P('fig',38,104,.95,0,0,{pose:'raise'})+P('fig',122,104,.95,0,1,{pose:'hold',robe:Q.warm})+P('speech',42,36,.7)+P('speech',118,36,.7,0,1)+sDash('M58 66Q80 44 102 66')+sSpk([[80,58,4]]);};
@@ -2745,8 +2787,8 @@ document.getElementById('app').addEventListener('click',function(e){
     case 'dcheck':{var dta=document.getElementById('dt'),dr=S.dil[ui.did]||(S.dil[ui.did]={});if(dta)dr.t=dta.value;if(!dr.seen){dr.seen=dkey();S.xp+=15;dayRec(dkey()).xp+=15;touchStreak(dkey());}ui.newMedals=checkMedals();save();render();window.scrollTo(0,0);break;}
     case 'dc':{var dr2=S.dil[ui.did]||(S.dil[ui.did]={});dr2.c=(dr2.c===D.a)?null:D.a;save();render();break;}
     case 'repgo':go('report',{from:D.f||'tu'});break;
-    case 'repprint':{try{window.print();}catch(er){ui.msg='No se pudo abrir la impresión.';render();}break;}
-    case 'repcopy':{var rt=repText();ui.msg='Informe copiado como texto.';try{navigator.clipboard.writeText(rt).then(render,function(){ui.msg='No se pudo copiar.';render();});}catch(er){ui.msg='No se pudo copiar.';render();}break;}
+    case 'repprint':{if(!S.rep)S.rep={n:'',g:''};S.rep.exp=dkey();ui.newMedals=checkMedals();save();render();try{window.print();}catch(er){ui.msg='No se pudo abrir la impresión.';render();}break;}
+    case 'repcopy':{if(!S.rep)S.rep={n:'',g:''};S.rep.exp=dkey();ui.newMedals=checkMedals();save();var rt=repText();ui.msg='Informe copiado como texto.';try{navigator.clipboard.writeText(rt).then(render,function(){ui.msg='No se pudo copiar.';render();});}catch(er){ui.msg='No se pudo copiar.';render();}break;}
     case 'syncon':{syncFlag(true);SY.st='run';render();syncNow(true);break;}
     case 'syncnow':{syncNow(true);break;}
     case 'syncoff':{try{if(SY.tok&&window.google&&google.accounts)google.accounts.oauth2.revoke(SY.tok,function(){});}catch(er){}SY.tok=null;SY.st='idle';syncFlag(false);render();break;}
@@ -2777,12 +2819,12 @@ function tScore(a,b){
 function tFinish(){
   var p=tpS(),r=tScore(p.a,p.b),first=!S.tst,pc={};
   ORDER.forEach(function(id){pc[id]=r.pct[id].pct;});
-  S.tst={d:dkey(),top:r.rank.slice(0,3),rank:r.rank,pct:pc,amb:r.amb};
+  S.tst={n:(S.tst&&S.tst.n||(S.tst?1:0))+1,d:dkey(),top:r.rank.slice(0,3),rank:r.rank,pct:pc,amb:r.amb};
   S.tp=null;
   if(first){S.xp+=30;dayRec(dkey()).xp+=30;touchStreak(dkey());}
   ui.newMedals=checkMedals();save();
 }
-function medalBanner(){var m=ui.newMedals;if(!m||!m.length)return '';return '<div class="card" role="status"><strong>¡Medalla nueva!</strong> '+m.map(function(x){return h(x.n);}).join(', ')+'</div>';}
+function medalBanner(){var m=ui.newMedals,c=ui.newCards,o='';if(m&&m.length)o+='<div class="card noprint" role="status"><strong>¡Medalla nueva!</strong> '+m.map(function(x){return h(x.n);}).join(', ')+'</div>';if(c&&c.length)o+='<div class="card stack newcards noprint" role="status"><h2 style="font-size:18px">'+(c.length>1?'¡Cartas nuevas!':'¡Carta nueva!')+'</h2><div class="cgrid">'+c.map(cdMini).join('')+'</div></div>';return o;}
 function viewTest(){
   var ts=ui.ts;if(!ts)ts=(S.tst&&tpN()===0)?'res':(tpN()>0?'q':'intro');
   var N=TST.preguntas.length;
