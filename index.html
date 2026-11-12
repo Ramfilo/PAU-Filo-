@@ -431,6 +431,11 @@ details.card summary{cursor:pointer;min-height:24px}
 :root[data-div="on"][data-mov="reducido"] *,:root[data-div="on"][data-mov="reducido"] *::before,:root[data-div="on"][data-mov="reducido"] *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 :root[data-div="on"][data-foco="fuerte"] :focus-visible{outline:4px solid var(--accent);outline-offset:3px;box-shadow:0 0 0 7px var(--surface)}
 
+@keyframes cvR{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes cvL{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
+.cvr{animation:cvR .22s ease-out}.cvl{animation:cvL .22s ease-out}
+@media (prefers-reduced-motion:reduce){.cvr,.cvl{animation:none}}
+.cvnav .iconbtn:disabled{opacity:.35;cursor:default}
 /* ---- Cartas: selector y carrusel ---- */
 .cau{display:flex;gap:6px;overflow-x:auto;margin:0;padding:2px 0 6px;scroll-snap-type:x proximity;scrollbar-width:none}
 .cau::-webkit-scrollbar{display:none}
@@ -759,6 +764,7 @@ function beep(ok){if(!S.sound)return;try{ac=ac||new(window.AudioContext||window.
 
 /* ---------- navegación ---------- */
 var ui={view:'home'},G=null,st=null,R=null,timer=null;
+var CS={sec:'all',st:'all',i:0,y:0,restore:false,dir:0,swiped:0};
 var DEFERRED=null;
 try{window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();DEFERRED=e;if(ui.view==='settings')render();});window.addEventListener('appinstalled',function(){DEFERRED=null;ui.inst='Instalada. Búscala en tu pantalla de inicio o en tus aplicaciones.';if(ui.view==='settings')render();});}catch(e){}
 var NAV={d:0,skip:false},MAINV={home:1,map:1,esc:1,tu:1,cards:1,stats:1,settings:1},NOREST={play:1,result:1,escrev:1,onboard:1};
@@ -1161,17 +1167,16 @@ function cdSections(){
   [['h','Relaciones','Relaciones entre autores'],['e','Escritura','Escritura'],['v','Tú','Tú y la Filosofía'],['x','Maestría','Maestría']].forEach(function(x){S2.push({id:x[0],t:x[1],full:x[2],au:false,l:CARDS.filter(function(c){return c.type===x[0];})});});
   return S2;
 }
+function cdList(){var st=CS.st,secs=cdSections(),l=[];secs.forEach(function(x){if(CS.sec==='all'||CS.sec===x.id)x.l.forEach(function(c){var o=!!S.cards[c.id];if(st==='got'?o:st==='miss'?!o:true)l.push(c);});});return l;}
+function cdNav(){var l=cdList(),k;for(k=0;k<l.length;k++)if(l[k].id===ui.cid)return {l:l,i:k,ctx:true};l=[];cdSections().forEach(function(x){x.l.forEach(function(c){l.push(c);});});for(k=0;k<l.length;k++)if(l[k].id===ui.cid)break;return {l:l,i:k,ctx:false};}
+function cardMove(d){if(ui.view!=='card')return;var n=cdNav(),j=n.i+d;if(j<0||j>=n.l.length)return;CS.dir=d;if(n.ctx&&CS.sec!=='all')CS.i=j;go('card',{cid:n.l[j].id});}
 function viewCards(){
-  var got=Object.keys(S.cards).filter(function(k){return CBY[k];}).length,tot=CARDS.length,st=ui.cst||'all';
+  var got=Object.keys(S.cards).filter(function(k){return CBY[k];}).length,tot=CARDS.length,st=CS.st||'all';
   var golds=CARDS.filter(function(c){var r=S.cards[c.id];return r&&(c.type==='p'?r.g:c.foil);}).length;
   var secs=cdSections();
   function own(c){return !!S.cards[c.id];}
   function match(c){return st==='got'?own(c):st==='miss'?!own(c):true;}
-  var sel=ui.csec;
-  if(!sel||(sel!=='all'&&!secs.some(function(x){return x.id===sel;}))){
-    var d=secs.filter(function(x){var n=x.l.filter(own).length;return x.au&&n>0&&n<x.l.length;})[0]||secs.filter(function(x){return x.au&&x.l.filter(own).length<x.l.length;})[0];
-    sel=d?d.id:'all';
-  }
+  var sel=CS.sec;if(sel!=='all'&&!secs.some(function(x){return x.id===sel;}))sel=CS.sec='all';
   var strip='<div class="cau" role="group" aria-label="Elegir autor o colección"><button class="cab'+(sel==='all'?' on':'')+'" data-act="csec" data-v="all" aria-pressed="'+(sel==='all')+'"><span class="cabi">'+ico('<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>')+'</span><span>Todas</span><span class="n">'+got+'/'+tot+'</span></button>'+
    secs.map(function(x){var n=x.l.filter(own).length,on=sel===x.id;
      return '<button class="cab'+(on?' on':'')+'" data-act="csec" data-v="'+x.id+'" aria-pressed="'+on+'"'+(x.au?' style="--cl:'+META[x.id].l+';--cd:'+META[x.id].d+'"':'')+'>'+(x.au?'<span class="cabi">'+portrait(x.id,38)+'</span>':'<span class="cabi">'+ico(({h:'<path d="M5 12h14M13 6l6 6-6 6"/>',e:'<path d="M4 20l4-1 11-11-3-3L5 16z"/>',v:'<path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10c1 1 1 2 1 3h6c0-1 0-2 1-3a6 6 0 00-4-10z"/>',x:'<path d="M12 3l3 6 6 1-4.5 4.5L18 21l-6-3-6 3 1.5-6.5L3 10l6-1z"/>'})[x.id])+'</span>')+'<span>'+h(x.t)+'</span><span class="n">'+n+'/'+x.l.length+'</span></button>';}).join('')+'</div>';
@@ -1195,10 +1200,12 @@ function viewCards(){
 }
 function viewCard(){
   var c=CBY[ui.cid];if(!c)return viewCards();
+  var nv=cdNav(),dir=CS.dir;CS.dir=0;
   var rec=S.cards[c.id],wa='https://wa.me/?text='+encodeURIComponent('He conseguido la carta «'+c.title+'» en Filosofía PAU Madrid 🏛️');
-  return '<div class="wrap stack"><div class="row"><button class="iconbtn" data-act="tab" data-v="cards" aria-label="Volver a las cartas">'+ico('<path d="M15 5l-7 7 7 7"/>')+'</button><div class="grow"><strong>'+h(rec?c.title:'Carta por descubrir')+'</strong><br><span class="small muted">'+CD_TYPE[c.type]+' · n.º '+c.num+' de '+CARDS.length+'</span></div></div>'+
-   '<div class="flipwrap"><button class="flip" data-act="flip" aria-label="Dar la vuelta a la carta"><span class="face fr">'+cdFront(c,rec)+'</span><span class="face bk">'+cdBack(c,rec)+'</span></button></div>'+
-   '<p class="small muted" style="text-align:center">Toca la carta para ver el reverso</p>'+
+  return '<div class="wrap stack"><div class="row"><button class="iconbtn" data-act="cback" aria-label="Volver a las cartas">'+ico('<path d="M15 5l-7 7 7 7"/>')+'</button><div class="grow"><strong>'+h(rec?c.title:'Carta por descubrir')+'</strong><br><span class="small muted">'+CD_TYPE[c.type]+' · n.º '+c.num+' de '+CARDS.length+'</span></div></div>'+
+   '<div class="flipwrap'+(dir?(dir>0?' cvr':' cvl'):'')+'"><button class="flip" data-act="flip" aria-label="Dar la vuelta a la carta"><span class="face fr">'+cdFront(c,rec)+'</span><span class="face bk">'+cdBack(c,rec)+'</span></button></div>'+
+   '<div class="ccnt cvnav"><button class="iconbtn" data-act="cmove" data-d="-1" aria-label="Carta anterior"'+(nv.i<=0?' disabled':'')+'>'+ico('<path d="M15 5l-7 7 7 7"/>')+'</button><span class="small muted" aria-live="polite">'+(nv.i+1)+' de '+nv.l.length+'</span><button class="iconbtn" data-act="cmove" data-d="1" aria-label="Carta siguiente"'+(nv.i>=nv.l.length-1?' disabled':'')+'>'+ico('<path d="M9 5l7 7-7 7"/>')+'</button></div>'+
+   '<p class="small muted" style="text-align:center">Toca la carta para ver el reverso · desliza para cambiar de carta</p>'+
    (rec&&avGifts(c.id).length?'<div class="card"><p class="small" style="margin:0"><strong>Esta carta desbloquea para tu avatar:</strong> '+h(avGifts(c.id).join(', '))+'.</p></div>':'')+
    (rec?'<div class="row"><button class="btn grow" data-act="cshare" data-id="'+h(c.id)+'">'+ico('<path d="M12 16V4M7 9l5-5 5 5M5 14v5h14v-5"/>')+'<span>Compartir</span></button><button class="btn ghost" data-act="csave" data-id="'+h(c.id)+'">Guardar imagen</button></div><a class="btn ghost block" href="'+wa+'" target="_blank" rel="noopener">Enviar por WhatsApp</a><p class="small muted" style="text-align:center">«Compartir» abre las apps de tu móvil (WhatsApp, Instagram…) con la imagen de la carta por delante y por detrás.</p>':
     '<div class="card"><p><strong>Cómo conseguirla</strong></p><p class="muted">'+h(c.how)+'</p></div>')+'</div>'+tabs('cards');
@@ -2127,7 +2134,11 @@ function avRandom(){var r=function(n){return Math.floor(Math.random()*n);},cur=a
   return {sk:pick(AV_SKIN,'sk',1),face:r(4),age:r(4),eye:pick(AV_EYEC,'eye',1),mouth:r(3),hs:pick(AV_HAIR,'hs'),hc:pick(AV_HAIRC,'hc',1),fh:pick(AV_BEARD,'fh'),gl:pick(AV_GLASS,'gl'),hw:Math.random()<.35?pick(AV_HEAD,'hw'):'none',mk:'none',ou:r(AV_OUT.length),oc:pick(AV_OUTC,'oc',1),fr:cur.fr,bg:cur.bg,name:cur.name||''};}
 function avBtn(sz){var o=avNorm(S.av);sz=sz||58;return '<button class="avbtn'+(sz>80?' big':'')+'" style="width:'+sz+'px;height:'+sz+'px" data-act="avatar" aria-label="Editar mi avatar">'+avSvg(o,{size:sz})+'<span class="pen" aria-hidden="true">'+ico(AV_PEN)+'</span></button>';}
 
-document.addEventListener('scroll',function(e){var t=e.target;if(!t||!t.classList||!t.classList.contains('ccar'))return;var w=t.firstElementChild;if(!w)return;var n=t.children.length,i=Math.round(t.scrollLeft/(w.offsetWidth+12));i=Math.max(0,Math.min(n-1,i));var p=t.parentNode,c=p.querySelector('.ccount');if(c)c.textContent=(i+1)+' de '+n;var d=p.querySelectorAll('.cdots i');for(var k=0;k<d.length;k++)d[k].classList.toggle('on',k===i);},true);
+var SW=null;
+document.addEventListener('touchstart',function(e){if(ui.view!=='card'||e.touches.length!==1){SW=null;return;}SW={x:e.touches[0].clientX,y:e.touches[0].clientY};},{passive:true});
+document.addEventListener('touchend',function(e){if(!SW||ui.view!=='card')return;var t=e.changedTouches[0],dx=t.clientX-SW.x,dy=t.clientY-SW.y;SW=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){CS.swiped=Date.now();cardMove(dx<0?1:-1);}},{passive:true});
+document.addEventListener('keydown',function(e){if(ui.view!=='card'||e.altKey||e.ctrlKey||e.metaKey)return;var t=e.target&&e.target.tagName;if(t==='INPUT'||t==='TEXTAREA')return;if(e.key==='ArrowRight')cardMove(1);else if(e.key==='ArrowLeft')cardMove(-1);});
+document.addEventListener('scroll',function(e){var t=e.target;if(!t||!t.classList||!t.classList.contains('ccar'))return;var w=t.firstElementChild;if(!w)return;var n=t.children.length,i=Math.round(t.scrollLeft/(w.offsetWidth+12));i=Math.max(0,Math.min(n-1,i));var p=t.parentNode,c=p.querySelector('.ccount');CS.i=i;if(c)c.textContent=(i+1)+' de '+n;var d=p.querySelectorAll('.cdots i');for(var k=0;k<d.length;k++)d[k].classList.toggle('on',k===i);},true);
 /*AV-END*/
 /*ESC-BEGIN*/
 /* ===== ESC: respuestas desarrolladas, rúbrica y análisis local (config en DATA.escritura) ===== */
@@ -2872,7 +2883,7 @@ function viewStats(){
    '<div class="card row" style="gap:12px;flex-wrap:wrap"><div class="grow"><strong>Informe en PDF</strong><br><span class="small muted">Progreso por autor, logros, tus cartas con el motivo de cada una y errores frecuentes, listo para guardar o enviar a tu profesor.</span></div><button class="btn sm" data-act="repgo" data-f="stats">Crear informe</button></div>'+
    '<div class="card"><div class="kv"><div><strong>'+S.cnt.answered+'</strong><span class="small muted">respondidas</span></div><div><strong>'+acc+' %</strong><span class="small muted">acierto</span></div><div><strong>'+S.streak.best+'</strong><span class="small muted">mejor racha</span></div><div><strong>'+S.best.simulacro.toFixed(1)+'</strong><span class="small muted">mejor simulacro</span></div><div><strong>'+S.best.duelo+'</strong><span class="small muted">mejor duelo</span></div></div></div>'+
    '<div class="card stack"><h2 style="font-size:18px">XP de los últimos 14 días</h2>'+(days.some(function(d){return d.xp>0;})?chart:'<div class="empty"><p><strong>Aún no hay actividad.</strong></p><p class="small muted">Haz tu primer nivel y aquí verás tu XP día a día.</p><button class="btn sm" data-act="tab" data-v="map">Ir a Autores</button></div>')+'</div>'+
-   '<div class="card stack"><h2 style="font-size:18px">Dominio por autor</h2><div class="keybox"><strong>Lectura 20 % + Pruebas 50 % + Escritura 30 %</strong></div><details class="more"><summary>Cómo se calcula</summary><p class="small muted">Lectura de las secciones de estudio (hasta 20 %), pruebas de nivel según tu ratio de aciertos (hasta 50 %) y pruebas de escritura (hasta 30 %). Con lectura y pruebas llegas como máximo al 70 %; el resto lo aporta Escribir.</p></details>'+authors+'</div>'+
+   '<div class="card stack"><h2 style="font-size:18px">Dominio por autor</h2><p class="muted">El dominio de cada autor se mide según la lectura de las áreas de estudio, los tests y la escritura.</p>'+authors+'</div>'+
    '<div class="card stack"><h2 style="font-size:18px">Dominio por bloque temático</h2>'+blocks+'</div>'+
    '<div class="card stack"><h2 style="font-size:18px">Problemas a reforzar</h2>'+weakH+'</div>'+
    '<div class="card stack"><h2 style="font-size:18px">Medallas · '+Object.keys(S.medals).length+'/'+MEDALS.length+'</h2>'+medals+'</div>'+
@@ -3052,6 +3063,7 @@ function render(){
     default:html=viewHome();
   }
   root.innerHTML=html;
+  if(ui.view==='cards'&&CS.restore){CS.restore=false;var ry=CS.y,ri=CS.i;requestAnimationFrame(function(){var cc=document.querySelector('.ccar');if(cc&&cc.firstElementChild&&ri>0)cc.scrollLeft=ri*(cc.firstElementChild.offsetWidth+12);window.scrollTo(0,ry);});}
   var f=root.querySelector('[data-focus]');
   if(f){try{f.focus({preventScroll:true});f.scrollIntoView({block:'nearest'});}catch(e){}}
   else if(ui.view==='play'){var qp=document.getElementById('qp');if(qp&&!st.done&&G.mode!=='duelo'){try{qp.focus({preventScroll:true});}catch(e){}}}
@@ -3067,13 +3079,16 @@ document.getElementById('app').addEventListener('click',function(e){
   if(act.indexOf('esc')===0){escClick(act,D);return;}
   switch(act){
     case 'tab':
+      if(D.v==='cards'&&ui.view!=='card'&&ui.view!=='cards'){CS.sec='all';CS.st='all';CS.i=0;CS.y=0;CS.restore=false;}
       if(D.v==='author'){go('author',{aid:D.a});}else go(D.v);break;
-    case 'card':go('card',{cid:D.id});break;
-    case 'flip':el.classList.toggle('on');break;
+    case 'card':if(ui.view==='cards'){CS.y=window.pageYOffset||0;CS.restore=true;}go('card',{cid:D.id});break;
+    case 'flip':if(Date.now()-CS.swiped<400)break;el.classList.toggle('on');break;
     case 'cshare':cdShare(D.id,false);break;
     case 'csave':cdShare(D.id,true);break;
-    case 'csec':ui.csec=D.v;render();break;
-    case 'cst':ui.cst=D.v;render();break;
+    case 'csec':CS.sec=D.v;CS.i=0;CS.restore=false;render();break;
+    case 'cst':CS.st=D.v;CS.i=0;CS.restore=false;render();break;
+    case 'cback':CS.restore=true;go('cards');break;
+    case 'cmove':cardMove(+D.d);break;
     case 'cnav':{var cc=document.querySelector('.ccar');if(cc&&cc.firstElementChild){var sw=cc.firstElementChild.offsetWidth+12;cc.scrollBy({left:(+D.d)*sw,behavior:window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}break;}
     case 'avatar':go('avatar');break;
     case 'avtab':ui.avt=D.v;ui.avmsg='';render();break;
